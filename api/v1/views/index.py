@@ -1,26 +1,34 @@
-from api.v1.views import app_views
+#!/usr/bin/env python3
+"""Defines a status route for the HolbertonBnB API."""
 from flask import jsonify
+from flasgger import swag_from
+from models import storage
+from api.v1.views import app_views
 
-# create a route /status on the object app_views that returns a JSON: "status": "OK"
-@app_views.route('/status', strict_slashes=False)
+
+@app_views.route("/status")
+@swag_from("../apidocs/status/status.yml")
 def status():
-    """ Method to return status """
+    """Returns the server status.
+
+    Returns:
+        JSON object with the current server status.
+    """
     return jsonify({"status": "OK"})
 
 
-"""Create an endpoint that retrieves the number of each objects by type:
-
-In api/v1/views/index.py
-Route: /api/v1/stats
-You must use the newly added count() method from storage"""
-
-@app_views.route('/stats', strict_slashes=False)
+@app_views.route("/stats")
+@swag_from("../apidocs/stats/stats.yml")
 def stats():
-    """ Method to return stats """
-    from models import storage
-    return jsonify({"amenities": storage.count("Amenity"),
-                    "cities": storage.count("City"),
-                    "places": storage.count("Place"),
-                    "reviews": storage.count("Review"),
-                    "states": storage.count("State"),
-                    "users": storage.count("User")})
+    """Retrives the count of each object type.
+
+    Returns:
+        JSON object with the number of objects by type."""
+    return jsonify({
+        "amenities": storage.count("Amenity"),
+        "cities": storage.count("City"),
+        "places": storage.count("Place"),
+        "reviews": storage.count("Review"),
+        "states": storage.count("State"),
+        "users": storage.count("User")
+    })
