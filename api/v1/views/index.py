@@ -1,34 +1,35 @@
-#!/usr/bin/env python3
-"""Defines a status route for the HolbertonBnB API."""
-from flask import jsonify
-from flasgger import swag_from
-from models import storage
+#!/usr/bin/python3
+"""
+Module docs
+"""
 from api.v1.views import app_views
+from flask import jsonify
+from models import storage
 
 
-@app_views.route("/status")
-@swag_from("../apidocs/status/status.yml")
-def status():
-    """Returns the server status.
-
-    Returns:
-        JSON object with the current server status.
+@app_views.route('/status', strict_slashes=False)
+def health_check():
+    """
+    Function Docs
     """
     return jsonify({"status": "OK"})
 
 
 @app_views.route("/stats")
-@swag_from("../apidocs/stats/stats.yml")
-def stats():
-    """Retrives the count of each object type.
+def count():
+    """
+    Function Docs
+    """
+    objs = {
+            'amenities': storage.count('Amenity'),
+            'cities': storage.count('City'),
+            'places': storage.count('Place'),
+            'reviews': storage.count('Review'),
+            'states': storage.count('State'),
+            'users': storage.count('User')
+            }
+    return jsonify(objs)
 
-    Returns:
-        JSON object with the number of objects by type."""
-    return jsonify({
-        "amenities": storage.count("Amenity"),
-        "cities": storage.count("City"),
-        "places": storage.count("Place"),
-        "reviews": storage.count("Review"),
-        "states": storage.count("State"),
-        "users": storage.count("User")
-    })
+
+if __name__ == "__main__":
+    pass
