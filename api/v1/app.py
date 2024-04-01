@@ -1,45 +1,36 @@
 #!/usr/bin/python3
-"""
-Module docs
-"""
+"""App.py for api v1"""
 from api.v1.views import app_views
-from flasgger import Swagger
-from flasgger.utils import swag_from
 from flask import Flask, jsonify
-from flask_cors import CORS
 from models import storage
-from os import getenv
+import os
+
 
 app = Flask(__name__)
+
 app.register_blueprint(app_views)
-cors = CORS(app, resources={r"/api/v1/*": {"origins": "0.0.0.0"}})
 
 
 @app.teardown_appcontext
-def teardown(self):
+def teardown_appcontext(exception):
     """
-    Function Docs
+    Teardown application context
     """
-    return storage.close()
+    storage.close()
 
 
 @app.errorhandler(404)
-def error(error):
-    """
-    Function Docs
-    """
+def not_found(error):
+    """Error returned when page not found"""
     return jsonify({"error": "Not found"}), 404
 
 
-app.config['SWAGGER'] = {
-        'title': 'AirBnB clone Restful API',
-        'uiversion': 3
-        }
-
-Swagger(app)
-
-
-if __name__ == '__main__':
-    host = getenv("HBNB_API_HOST") if getenv("HBNB_API_HOST") else "0.0.0.0"
-    port = getenv("HBNB_API_PORT") if getenv("HBNB_API_PORT") else 5000
+if __name__ == "__main__":
+    """Main function"""
+    host = os.getenv('HBNB_API_HOST')
+    port = os.getenv('HBNB_API_PORT')
+    if not host:
+        host = '0.0.0.0'
+    if not port:
+        port = '5000'
     app.run(host=host, port=port, threaded=True)
